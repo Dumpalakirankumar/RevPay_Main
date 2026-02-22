@@ -192,6 +192,56 @@ public class WalletServiceImpl implements WalletService {
 
 		return walletRepository.findByUser(user).orElseThrow(() -> new RuntimeException("Wallet not found"));
 	}
+    @Override
+    public void creditUser(User user, Double amount, String remark) {
+
+        Wallet wallet = walletRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+
+        double newBalance = wallet.getBalance() + amount;
+        wallet.setBalance(newBalance);
+        wallet.setUpdatedAt(LocalDateTime.now());
+        walletRepository.save(wallet);
+
+        Transaction txn = new Transaction();
+        txn.setWallet(wallet);
+        txn.setAmount(amount);
+        txn.setTxnType("LOAN_CREDIT");
+        txn.setBalanceAfterTxn(newBalance);
+        txn.setCreatedAt(LocalDateTime.now());
+        txn.setRemark(remark);
+
+        transactionRepository.save(txn);
+    }
+    
+    @Override
+    public void debitUser(User user, Double amount, String remark) {
+
+        if (amount == null || amount <= 0)
+            throw new RuntimeException("Invalid amount");
+
+        Wallet wallet = walletRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+
+        if (wallet.getBalance() < amount)
+            throw new RuntimeException("Insufficient balance");
+
+        double newBalance = wallet.getBalance() - amount;
+
+        wallet.setBalance(newBalance);
+        wallet.setUpdatedAt(LocalDateTime.now());
+        walletRepository.save(wallet);
+
+        Transaction txn = new Transaction();
+        txn.setWallet(wallet);
+        txn.setAmount(amount);
+        txn.setTxnType("EMI_PAYMENT");
+        txn.setBalanceAfterTxn(newBalance);
+        txn.setCreatedAt(LocalDateTime.now());
+        txn.setRemark(remark);
+
+        transactionRepository.save(txn);
+    }
 
 	
 }
