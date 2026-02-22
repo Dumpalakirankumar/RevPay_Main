@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.revpay.dto.request.AddMoneyRequest;
+import com.revpay.dto.request.CardDepositRequest;
 import com.revpay.dto.request.SendMoneyRequest;
 import com.revpay.entity.Wallet;
 import com.revpay.service.interfaces.WalletService;
@@ -48,7 +49,7 @@ public class WalletController {
 
  
     @PostMapping("/send")
-    public ResponseEntity<?> sendMoney(@RequestBody SendMoneyRequest request) {
+    public Map<String, Object> sendMoney(@RequestBody SendMoneyRequest request) {
 
         walletService.sendMoney(
                 request.getReceiverEmail(),
@@ -56,8 +57,17 @@ public class WalletController {
                 request.getRemark()
         );
 
-        return ResponseEntity.ok(
-                Map.of("message", "Transfer successful")
+        return Map.of("message", "Transfer successful");
+    }
+    
+    @PostMapping("/deposit-card")
+    public String depositViaCard(@RequestBody CardDepositRequest request) {
+
+        walletService.addMoneyViaCard(
+                request.getCardId(),
+                request.getAmount()
         );
+
+        return "Money added using card";
     }
 }

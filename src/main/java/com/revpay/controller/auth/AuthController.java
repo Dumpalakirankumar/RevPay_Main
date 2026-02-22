@@ -3,7 +3,6 @@ package com.revpay.controller.auth;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -11,8 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import com.revpay.dto.request.LoginRequest;
 import com.revpay.dto.request.RegisterRequest;
-import com.revpay.security.CustomUserDetails;
+import com.revpay.dto.response.ApiResponse;
 import com.revpay.security.JwtUtil;
+import com.revpay.security.CustomUserDetails;
 import com.revpay.service.interfaces.AuthService;
 
 @RestController
@@ -29,13 +29,13 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+    public ApiResponse<?> register(@RequestBody RegisterRequest request) {
         authService.register(request);
-        return ResponseEntity.ok("User Registered Successfully");
+        return new ApiResponse<>(true, "User Registered Successfully", null);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ApiResponse<?> login(@RequestBody LoginRequest request) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -44,16 +44,19 @@ public class AuthController {
                 )
         );
 
-     
-        CustomUserDetails userDetails =
-                (CustomUserDetails) authentication.getPrincipal();
+        // ⭐ Get authenticated user (contains role)
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-      
+        // ⭐ Generate token using authenticated username
         String token = jwtUtil.generateToken(userDetails.getUsername());
 
-        return ResponseEntity.ok(Map.of(
-                "token", token,
-                "type", "Bearer"
-        ));
+        return new ApiResponse<>(
+                true,
+                "Login successful",
+                Map.of(
+                        "token", token,
+                        "type", "Bearer"
+                )
+        );
     }
 }
