@@ -1,18 +1,14 @@
-package com.revpay.controller.auth;
+package com.revpay.controller.transaction;
 
+import com.revpay.dto.response.ApiResponse;
 import com.revpay.entity.Transaction;
 import com.revpay.entity.Wallet;
 import com.revpay.service.interfaces.TransactionService;
 import com.revpay.service.interfaces.WalletService;
-<<<<<<< HEAD
-
-import org.springframework.beans.factory.annotation.Autowired;
-=======
 import com.revpay.repository.TransactionRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
->>>>>>> 23cbf15 (Transactions with Pagination and Sorting)
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,14 +28,6 @@ public class TransactionController {
     private TransactionRepository transactionRepository;
 
     @GetMapping
-<<<<<<< HEAD
-    public List<Transaction> history() {
-
-     
-        Wallet wallet = walletService.getWalletOfCurrentUser();
-
-        return transactionRepository.findByWalletOrderByCreatedAtDesc(wallet);
-=======
     public ApiResponse<?> transactions(
             @RequestParam(defaultValue="0") int page,
             @RequestParam(defaultValue="5") int size,
@@ -54,6 +42,5 @@ public class TransactionController {
                 "Transactions fetched",
                 transactionService.searchTransactions(page,size,type,from,to,sort)
         );
->>>>>>> 23cbf15 (Transactions with Pagination and Sorting)
     }
 }

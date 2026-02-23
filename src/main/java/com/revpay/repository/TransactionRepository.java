@@ -8,11 +8,8 @@ import org.springframework.data.domain.Pageable;
 import com.revpay.entity.Wallet;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-<<<<<<< HEAD
-=======
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
->>>>>>> 23cbf15 (Transactions with Pagination and Sorting)
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,8 +17,6 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
     List<Transaction> findByWalletOrderByCreatedAtDesc(Wallet wallet);
-<<<<<<< HEAD
-=======
     
     @Query("SELECT COALESCE(SUM(t.amount),0) FROM Transaction t WHERE t.wallet = :wallet AND t.txnType='RECEIVE'")
     double totalReceived(Wallet wallet);
@@ -46,5 +41,4 @@ Page<Transaction> searchTransactions(
         @Param("toDate") LocalDateTime toDate,
         Pageable pageable
 );
->>>>>>> 23cbf15 (Transactions with Pagination and Sorting)
 }

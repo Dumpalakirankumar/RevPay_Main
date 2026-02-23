@@ -14,6 +14,13 @@ public interface WalletService {
  
     void addMoney(Double amount);
 
+    Wallet getMyWallet();
     
     void sendMoney(String receiverEmail, Double amount, String remark);
+    
+    void addMoneyViaCard(Long cardId, Double amount);
+    
+    void debitUser(User user, Double amount, String remark);
+    
+    void creditUser(User user, Double amount, String remark);
 }
