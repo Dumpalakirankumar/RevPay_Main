@@ -48,27 +48,11 @@ public class SecurityConfig {
 
         http
             .csrf(csrf -> csrf.disable())
-
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/css/**","/js/**","/images/**","/register","/login").permitAll()
-                .requestMatchers("/api/**").authenticated()
-                .anyRequest().authenticated()
+                    .requestMatchers("/api/auth/**").permitAll()
+                    .anyRequest().authenticated()
             )
-
-            // ⭐ Browser login
-            .formLogin(form -> form
-            	    .loginPage("/login")
-            	    .loginProcessingUrl("/login")  // must match controller
-            	    .defaultSuccessUrl("/dashboard", true)
-            	    .failureUrl("/login?error=true")
-            	    .permitAll()
-            	)
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout")
-            )
-
-            // keep JWT for API
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
