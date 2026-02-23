@@ -48,6 +48,7 @@ public class SecurityConfig {
 
         http
             .csrf(csrf -> csrf.disable())
+<<<<<<< HEAD
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
@@ -55,6 +56,13 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider()) // ⭐ THIS FIXES LOGIN
+=======
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/api/auth/**").permitAll()
+                    .anyRequest().authenticated()
+            )
+>>>>>>> 23cbf15 (Transactions with Pagination and Sorting)
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -65,4 +73,8 @@ public class SecurityConfig {
             throws Exception {
         return config.getAuthenticationManager();
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 23cbf15 (Transactions with Pagination and Sorting)
 }
