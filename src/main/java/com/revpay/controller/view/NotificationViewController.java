@@ -1,40 +1,40 @@
 package com.revpay.controller.view;
 
-import com.revpay.dto.response.PageResponse;
 import com.revpay.entity.Notification;
 import com.revpay.service.interfaces.NotificationService;
-
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller; // Use @Controller, NOT @RestController
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+
 @Controller
 public class NotificationViewController {
-	
-	@Autowired
+
+    @Autowired
     private NotificationService notificationService;
 
-	@GetMapping("/notifications")
-	public String viewNotifications(Model model) {
+    // Shows all user notifications and marks unread ones as read
+    @GetMapping("/notifications")
+    public String viewNotifications(Model model) {
 
-	    // Get ALL notifications (not only unread)
-	    List<Notification> notifications =
-	            notificationService.getAllNotifications();
+        List<Notification> notifications =
+                notificationService.getAllNotifications();
 
-	    // Mark unread ones as read
-	    notificationService.markAllAsRead();
+        notificationService.markAllAsRead();
 
-	    model.addAttribute("notifications", notifications);
-	    return "notifications";
-	}
-	
-	@PostMapping("/notifications/clear")
-	public String clearNotifications() {
-	    notificationService.clearAllNotifications();
-	    return "redirect:/notifications";
-	}
+        model.addAttribute("notifications", notifications);
+
+        return "notifications";
+    }
+
+    // Clears all notifications for the current user
+    @PostMapping("/notifications/clear")
+    public String clearNotifications() {
+
+        notificationService.clearAllNotifications();
+
+        return "redirect:/notifications";
+    }
 }

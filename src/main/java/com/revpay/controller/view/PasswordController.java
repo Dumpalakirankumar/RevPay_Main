@@ -8,56 +8,60 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.revpay.entity.User;
 import com.revpay.repository.UserRepository;
 
 @Controller
 public class PasswordController {
 
-	
-	 @Autowired
-	    private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-	    @Autowired
-	    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-	    @GetMapping("/forgot-password")
-	    public String forgotPasswordPage() {
-	        return "forgot-password";
-	    }
+    // Opens the forgot password page
+    @GetMapping("/forgot-password")
+    public String forgotPasswordPage() {
+        return "forgot-password";
+    }
 
-	    @PostMapping("/verify-color")
-	    public String verifyColor(@RequestParam String email,
-	                              @RequestParam String favoriteColor,
-	                              Model model) {
+    // Verifies user using email and favorite color before allowing password reset
+    @PostMapping("/verify-color")
+    public String verifyColor(@RequestParam String email,
+                              @RequestParam String favoriteColor,
+                              Model model) {
 
-	        User user = userRepository.findByEmail(email)
-	                .orElse(null);
+        User user = userRepository.findByEmail(email)
+                .orElse(null);
 
-	        if (user == null ||
-	            !user.getFavoriteColor().equalsIgnoreCase(favoriteColor)) {
+        if (user == null ||
+            !user.getFavoriteColor().equalsIgnoreCase(favoriteColor)) {
 
-	            model.addAttribute("error", "Invalid email or favorite color");
-	            return "forgot-password";
-	        }
+            model.addAttribute("error", "Invalid email or favorite color");
+            return "forgot-password";
+        }
 
-	        model.addAttribute("email", email);
-	        return "reset-password";
-	    }
+        model.addAttribute("email", email);
 
-	    @PostMapping("/reset-password")
-	    public String resetPassword(@RequestParam String email,
-	                                @RequestParam String password,
-	                                RedirectAttributes ra) {
+        return "reset-password";
+    }
 
-	        User user = userRepository.findByEmail(email)
-	                .orElseThrow(() -> new RuntimeException("User not found"));
+    // Updates the user's password after encoding it securely
+    @PostMapping("/reset-password")
+    public String resetPassword(@RequestParam String email,
+                                @RequestParam String password,
+                                RedirectAttributes ra) {
 
-	        user.setPassword(passwordEncoder.encode(password));
-	        userRepository.save(user);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-	        ra.addFlashAttribute("success", "Password updated successfully!");
-	        return "redirect:/login";
-	    }
+        user.setPassword(passwordEncoder.encode(password));
+
+        userRepository.save(user);
+
+        ra.addFlashAttribute("success", "Password updated successfully!");
+
+        return "redirect:/login";
+    }
 }

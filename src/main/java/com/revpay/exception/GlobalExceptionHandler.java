@@ -8,15 +8,16 @@ import org.springframework.web.bind.annotation.*;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // Handles RuntimeException and returns a structured 400 Bad Request response
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<?>> handleRuntime(RuntimeException ex) {
 
-        ApiResponse<?> response =
-                new ApiResponse<>(false, ex.getMessage(), null);
+        ApiResponse<?> response = new ApiResponse<>(false, ex.getMessage(), null);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    // Handles unexpected exceptions and returns a generic 500 error response
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<?>> handleGeneral(Exception ex) {
 

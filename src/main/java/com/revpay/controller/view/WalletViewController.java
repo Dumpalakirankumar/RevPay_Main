@@ -12,13 +12,13 @@ public class WalletViewController {
     @Autowired
     private WalletService walletService;
 
-    // open add money page
+    // Opens the page where user can add money to wallet
     @GetMapping("/wallet/add")
     public String addMoneyPage() {
         return "add-money";
     }
 
-    // submit add money
+    // Adds money to wallet and redirects to dashboard with status message
     @PostMapping("/wallet/add")
     public String addMoney(@RequestParam Double amount,
                            @RequestParam String remark,
@@ -26,8 +26,11 @@ public class WalletViewController {
 
         try {
             walletService.addMoney(amount, remark);
+
             ra.addFlashAttribute("success","Money added successfully");
+
         } catch (Exception e) {
+
             ra.addFlashAttribute("error", e.getMessage());
         }
 

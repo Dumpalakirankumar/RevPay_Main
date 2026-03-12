@@ -11,8 +11,7 @@ public class Transaction {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long txnId;
 
-	private String txnType; // ADD_MONEY, SEND, RECEIVE, WITHDRAW
-
+	private String txnType;
 	private Double amount;
 
 	private Double balanceAfterTxn;
@@ -80,7 +79,5 @@ public class Transaction {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
-
-	// getters setters
 
 }

@@ -13,6 +13,7 @@ public class TransactionViewController {
     @Autowired
     private TransactionService transactionService;
 
+    // Shows paginated transaction history with optional filters
     @GetMapping("/transactions")
     public String transactions(
             @RequestParam(defaultValue="0") int page,
@@ -22,12 +23,15 @@ public class TransactionViewController {
             @RequestParam(required=false) String to,
             Model model) {
 
-    	from = (from == null || from.isBlank()) ? null : from;
-    	to   = (to == null || to.isBlank()) ? null : to;
-    	type = (type == null || type.isBlank()) ? null : type;
+        from = (from == null || from.isBlank()) ? null : from;
+        to   = (to == null || to.isBlank()) ? null : to;
+        type = (type == null || type.isBlank()) ? null : type;
+
         PageResponse<?> response =
-        		transactionService.searchTransactions(page,size,type,from,to,null);
+                transactionService.searchTransactions(page, size, type, from, to, null);
+
         model.addAttribute("txns", response.getContent());
+
         model.addAttribute("currentPage", response.getCurrentPage());
         model.addAttribute("totalPages", response.getTotalPages());
 

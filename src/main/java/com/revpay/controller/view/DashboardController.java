@@ -25,68 +25,71 @@ public class DashboardController {
 
     @Autowired
     private TransactionService transactionService;
-    
+
     @Autowired
     private LoanService loanService;
-    
+
     @Autowired
     private NotificationService notificationService;
-    
+
     @Autowired
     private PaymentMethodService paymentMethodService;
-    
+
     @Autowired
     private InvoiceService invoiceService;
-    
+
     @Autowired
     private RequestService requestService;
-    
-    
 
+    // Loads dashboard with user details and role-based data (admin, personal, business)
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
 
         User user = userService.getCurrentUser();
+
         String role = user.getRole().getRoleName();
 
         model.addAttribute("name", user.getFullName());
+
         model.addAttribute("cards",
                 paymentMethodService.myCards());
-        
+
         model.addAttribute("incomingRequests",
                 requestService.getIncomingRequests());
 
         model.addAttribute("sentRequests",
                 requestService.mySentRequests());
 
-        // ================= ADMIN =================
         if (role.equals("ADMIN")) {
 
             model.addAttribute("loans", loanService.pendingLoans());
+
             return "dashboard";
         }
-        
+
         if(user.getRole().getRoleName().equals("BUSINESS")) {
+
             model.addAttribute("analytics",
                     invoiceService.getBusinessAnalytics());
         }
-        
+
         if(user.getRole().getRoleName().equals("BUSINESS")) {
+
             model.addAttribute("createdInvoices",
                     invoiceService.myCreatedInvoices());
         }
 
-        // ================= PERSONAL + BUSINESS COMMON FEATURES =================
         if (role.equals("PERSONAL") || role.equals("BUSINESS")) {
 
-            model.addAttribute("notifications", notificationService.myNotifications());
+            model.addAttribute("notifications", notificationService.getAllNotifications());
+
             model.addAttribute("balance", walletService.getMyWallet().getBalance());
+
             model.addAttribute("transactions",
                     transactionService.myTransactions(0,5).getContent());
+
             model.addAttribute("loans",
                     loanService.myActiveLoans());
-            
-            
 
             return "dashboard";
         }

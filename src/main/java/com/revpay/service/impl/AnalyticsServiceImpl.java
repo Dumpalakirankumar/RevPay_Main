@@ -14,23 +14,41 @@ import org.springframework.stereotype.Service;
 @Service
 public class AnalyticsServiceImpl implements AnalyticsService {
 
-    @Autowired private WalletService walletService;
-    @Autowired private TransactionRepository transactionRepository;
-    @Autowired private InvoiceRepository invoiceRepository;
-    @Autowired private UserService userService;
+    @Autowired 
+    private WalletService walletService;
 
+    @Autowired 
+    private TransactionRepository transactionRepository;
+
+    @Autowired 
+    private InvoiceRepository invoiceRepository;
+
+    @Autowired 
+    private UserService userService;
+
+    // Returns financial summary for the logged-in business user
     @Override
     public BusinessSummaryResponse getBusinessSummary() {
 
         User business = userService.getCurrentUser();
+
         Wallet wallet = walletService.getMyWallet();
 
         BusinessSummaryResponse res = new BusinessSummaryResponse();
 
         res.setWalletBalance(wallet.getBalance());
-        res.setTotalReceived(transactionRepository.totalReceived(wallet));
-        res.setTotalSent(transactionRepository.totalSent(wallet));
-        res.setTotalInvoiceRevenue(invoiceRepository.totalRevenue(business));
+
+        res.setTotalReceived(
+                transactionRepository.totalReceived(wallet)
+        );
+
+        res.setTotalSent(
+                transactionRepository.totalSent(wallet)
+        );
+
+        res.setTotalInvoiceRevenue(
+                invoiceRepository.totalRevenue(business)
+        );
 
         return res;
     }

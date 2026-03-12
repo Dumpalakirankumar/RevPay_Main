@@ -11,11 +11,14 @@ import jakarta.persistence.Table;
 @Table(name = "roles")
 public class Role {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long roleId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long roleId;
+	
+	@Column(unique = true, nullable = false)
+	private String roleName;
 
-    public Long getRoleId() {
+	public Long getRoleId() {
 		return roleId;
 	}
 
@@ -31,11 +34,4 @@ public class Role {
 		this.roleName = roleName;
 	}
 
-	@Column(unique = true, nullable = false)
-    private String roleName;   // PERSONAL, BUSINESS, ADMIN
-
-    // getters setters
-    
-    
 }
-

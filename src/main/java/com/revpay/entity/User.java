@@ -15,50 +15,49 @@ import jakarta.persistence.Table;
 @Table(name = "users")
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long userId;
 
-    private String fullName;
+	private String fullName;
 
-    @Column(unique = true, nullable = false)
-    private String email;
+	@Column(unique = true, nullable = false)
+	private String email;
 
-    @Column(unique = true)
-    private String phone;
+	@Column(unique = true)
+	private String phone;
 
-    private String password;
-    
-    @Column(nullable = false)
-    private String transactionPin;
-    
-    public String getTransactionPin() {
-        return transactionPin;
-    }
+	private String password;
 
-    public void setTransactionPin(String transactionPin) {
-        this.transactionPin = transactionPin;
-    }
-    	
+	@Column(nullable = false)
+	private String transactionPin;
 
-    private String accountStatus;
+	private String accountStatus;
 
-    private LocalDateTime createdAt;
+	private LocalDateTime createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
-    
-    @Column(nullable = false)
-    private String favoriteColor;
+	@ManyToOne
+	@JoinColumn(name = "role_id")
+	private Role role;
 
-    public String getFavoriteColor() {
-        return favoriteColor;
-    }
+	@Column(nullable = false)
+	private String favoriteColor;
+	
+	public String getTransactionPin() {
+		return transactionPin;
+	}
 
-    public void setFavoriteColor(String favoriteColor) {
-        this.favoriteColor = favoriteColor;
-    }
+	public void setTransactionPin(String transactionPin) {
+		this.transactionPin = transactionPin;
+	}
+
+	public String getFavoriteColor() {
+		return favoriteColor;
+	}
+
+	public void setFavoriteColor(String favoriteColor) {
+		this.favoriteColor = favoriteColor;
+	}
 
 	public Long getUserId() {
 		return userId;
@@ -100,8 +99,6 @@ public class User {
 		this.password = password;
 	}
 
-	
-
 	public String getAccountStatus() {
 		return accountStatus;
 	}
@@ -125,6 +122,5 @@ public class User {
 	public void setRole(Role role) {
 		this.role = role;
 	}
-    
-    
+
 }

@@ -5,22 +5,22 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
 import com.revpay.entity.User;
 import com.revpay.repository.UserRepository;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-	@Autowired
-	private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    // Loads user from database by email and returns CustomUserDetails
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-		User user = userRepository.findByEmail(username)
-				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-		return new CustomUserDetails(user);
-	}
+        return new CustomUserDetails(user);
+    }
 }

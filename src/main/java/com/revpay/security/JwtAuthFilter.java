@@ -21,6 +21,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+    // Extracts JWT from request header, validates it, and sets authentication
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -32,9 +33,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
 
             String token = header.substring(7);
+
             String username = jwtUtil.extractUsername(token);
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (username != null &&
+                SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 CustomUserDetails userDetails =
                         (CustomUserDetails) userDetailsService.loadUserByUsername(username);
@@ -45,10 +48,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
                                     null,
-                                    userDetails.getAuthorities() // ⭐ roles injected here
+                                    userDetails.getAuthorities()
                             );
 
-                    auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    auth.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
+
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
             }

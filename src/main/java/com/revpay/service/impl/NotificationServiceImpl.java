@@ -1,22 +1,18 @@
 package com.revpay.service.impl;
 
-import com.revpay.dto.response.PageResponse;
 import com.revpay.entity.Notification;
 import com.revpay.entity.User;
 import com.revpay.repository.NotificationRepository;
 import com.revpay.repository.UserRepository;
 import com.revpay.service.interfaces.NotificationService;
 import com.revpay.service.interfaces.UserService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import org.springframework.data.domain.Page;
-
-import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,16 +20,22 @@ import java.util.List;
 @Service
 public class NotificationServiceImpl implements NotificationService {
 
+	private static final Logger logger = LogManager.getLogger(NotificationServiceImpl.class);
+
 	@Autowired
 	private NotificationRepository notificationRepository;
+
 	@Autowired
 	private UserService userService;
 
 	@Autowired
 	private UserRepository userRepository;
 
+	// Creates and saves a notification for the given user
 	@Override
 	public void notify(User user, String title, String message) {
+
+		logger.info("Creating notification for user: {}", user.getEmail());
 
 		Notification n = new Notification();
 		n.setUser(user);
@@ -43,70 +45,66 @@ public class NotificationServiceImpl implements NotificationService {
 		n.setCreatedAt(LocalDateTime.now());
 
 		notificationRepository.save(n);
+
+		logger.info("Notification saved successfully for user: {}", user.getEmail());
 	}
 
-	@Override
-	public List<Notification> myNotifications() {
-		return notificationRepository.findTop5ByUserOrderByCreatedAtDesc(userService.getCurrentUser());
-	}
-
-	@Override
-	public PageResponse<?> myNotifications(int page, int size) {
-
-		User user = userService.getCurrentUser();
-
-		Pageable pageable = PageRequest.of(page, size);
-
-		Page<Notification> notificationPage = notificationRepository.findByUserOrderByCreatedAtDesc(user, pageable);
-
-		return new PageResponse<>(notificationPage.getContent(), notificationPage.getNumber(),
-				notificationPage.getTotalPages(), notificationPage.getTotalElements());
-	}
-
+	// Marks all unread notifications as read for the current user
 	@Override
 	public void markAllAsRead() {
 
 		User currentUser = getCurrentUser();
 
+		logger.info("Marking all notifications as read for user: {}", currentUser.getEmail());
+
 		List<Notification> notifications = notificationRepository.findByUserAndIsReadFalse(currentUser);
 
 		for (Notification n : notifications) {
-			n.setIsRead(true); // ✅ correct setter
+			n.setIsRead(true);
 		}
 
 		notificationRepository.saveAll(notifications);
+
+		logger.info("{} notifications marked as read for user: {}", notifications.size(), currentUser.getEmail());
 	}
 
-	private User getCurrentUser() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String email = authentication.getName();
-
-		return userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
-	}
-
-	@Override
-	public List<Notification> getUnreadNotifications() {
-		User user = userService.getCurrentUser();
-		return notificationRepository.findByUserAndIsReadFalse(user);
-	}
-
+	// Returns all notifications of the current user ordered by latest
 	@Override
 	public List<Notification> getAllNotifications() {
+
 		User user = userService.getCurrentUser();
+
+		logger.info("Fetching all notifications for user: {}", user.getEmail());
+
 		return notificationRepository.findByUserOrderByCreatedAtDesc(user);
 	}
 
-	@Override
-	public void deleteAllNotifications() {
-		User user = userService.getCurrentUser();
-		List<Notification> notifications = notificationRepository.findByUserOrderByCreatedAtDesc(user);
-		notificationRepository.deleteAll(notifications);
-	}
-
+	// Deletes all notifications belonging to the current user
 	@Override
 	@Transactional
 	public void clearAllNotifications() {
+
 		User user = userService.getCurrentUser();
+
+		logger.warn("Clearing all notifications using deleteByUser for user: {}", user.getEmail());
+
 		notificationRepository.deleteByUser(user);
+
+		logger.info("All notifications cleared for user: {}", user.getEmail());
+	}
+
+	// Retrieves the currently authenticated user from security context
+	private User getCurrentUser() {
+
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		String email = authentication.getName();
+
+		logger.debug("Fetching current user from security context: {}", email);
+
+		return userRepository.findByEmail(email).orElseThrow(() -> {
+			logger.error("User not found with email: {}", email);
+			return new RuntimeException("User not found");
+		});
 	}
 }

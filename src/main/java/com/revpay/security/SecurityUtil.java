@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SecurityUtil {
 
+    // Returns email of the currently authenticated user
     public static String getCurrentUsername() {
 
         Authentication auth = SecurityContextHolder
@@ -16,6 +17,6 @@ public class SecurityUtil {
         if (auth == null || !auth.isAuthenticated())
             return null;
 
-        return auth.getName(); // email (username)
+        return auth.getName();
     }
 }

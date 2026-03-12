@@ -13,36 +13,39 @@ public class TransferViewController {
 
     @Autowired
     private WalletService walletService;
-    
+
     @Autowired
     private PaymentMethodService paymentMethodService;
 
-    // open page
+    // Opens send money page and loads user's saved cards
     @GetMapping("/send")
     public String sendPage(Model model) {
+
         model.addAttribute("cards", paymentMethodService.myCards());
+
         return "send-money";
     }
 
-    // handle form submit
+    // Sends money using card if selected, otherwise uses wallet with PIN
     @PostMapping("/send")
     public String sendMoney(@RequestParam String email,
                             @RequestParam Double amount,
                             @RequestParam String remark,
                             @RequestParam(required = false) Long cardId,
-                            @RequestParam String pin,   // ✅ ADD THIS
+                            @RequestParam String pin,
                             RedirectAttributes redirectAttributes) {
 
         try {
 
             if (cardId != null)
-            	 walletService.sendMoneyUsingCard(cardId, email, amount, remark);  // ✅ PASS PIN
+                walletService.sendMoneyUsingCard(cardId, email, amount, remark);
             else
-                walletService.sendMoney(email, amount, remark, pin);  // ✅ PASS PIN
+                walletService.sendMoney(email, amount, remark, pin);
 
             redirectAttributes.addFlashAttribute("success", "Money sent successfully");
 
         } catch (Exception e) {
+
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
 

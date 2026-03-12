@@ -17,7 +17,7 @@ public class Wallet {
 
     private Double balance;
 
-    private String status; // ACTIVE / BLOCKED
+    private String status;
 
     private LocalDateTime updatedAt;
 
@@ -61,7 +61,6 @@ public class Wallet {
 		this.updatedAt = updatedAt;
 	}
 
-    // getters & setters
     
     
 }

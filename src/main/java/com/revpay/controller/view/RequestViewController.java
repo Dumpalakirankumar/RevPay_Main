@@ -10,60 +10,73 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class RequestViewController {
 
-	@Autowired
-	private RequestService requestService;
+    @Autowired
+    private RequestService requestService;
 
-	// open request page
-	@GetMapping("/request")
-	public String requestPage() {
-		return "request-money";
-	}
+    // Opens the page where a user can request money from another user
+    @GetMapping("/request")
+    public String requestPage() {
+        return "request-money";
+    }
 
-	// create request
-	@PostMapping("/request")
-	public String createRequest(@RequestParam String email, @RequestParam Double amount, @RequestParam String note,
-			RedirectAttributes ra) {
+    // Creates a money request and redirects to dashboard with status message
+    @PostMapping("/request")
+    public String createRequest(@RequestParam String email,
+                                @RequestParam Double amount,
+                                @RequestParam String note,
+                                RedirectAttributes ra) {
 
-		try {
-			requestService.createRequest(email, amount, note);
-			ra.addFlashAttribute("success", "Money request sent successfully");
-		} catch (Exception e) {
-			ra.addFlashAttribute("error", e.getMessage());
-		}
+        try {
+            requestService.createRequest(email, amount, note);
 
-		return "redirect:/dashboard";
-	}
+            ra.addFlashAttribute("success", "Money request sent successfully");
 
-	// incoming requests page
-	@GetMapping("/requests")
-	public String incomingRequests(Model model) {
-		model.addAttribute("requests", requestService.getIncomingRequests());
-		return "incoming-requests";
-	}
+        } catch (Exception e) {
 
-	// accept
-	@PostMapping("/requests/accept/{id}")
-	public String accept(@PathVariable Long id, RedirectAttributes ra) {
-		try {
-			requestService.acceptRequest(id);
-			ra.addFlashAttribute("success", "Request accepted");
-		} catch (Exception e) {
-			ra.addFlashAttribute("error", e.getMessage());
-		}
-		return "redirect:/requests";
-	}
+            ra.addFlashAttribute("error", e.getMessage());
+        }
 
-	// reject
-	@PostMapping("/requests/reject/{id}")
-	public String reject(@PathVariable Long id, RedirectAttributes ra) {
+        return "redirect:/dashboard";
+    }
 
-		try {
-			requestService.rejectRequest(id);
-			ra.addFlashAttribute("success", "Request rejected");
-		} catch (Exception e) {
-			ra.addFlashAttribute("error", e.getMessage());
-		}
+    // Shows all incoming money requests for the logged-in user
+    @GetMapping("/requests")
+    public String incomingRequests(Model model) {
 
-		return "redirect:/requests";
-	}
+        model.addAttribute("requests", requestService.getIncomingRequests());
+
+        return "incoming-requests";
+    }
+
+    // Accepts a request and transfers money to the requester
+    @PostMapping("/requests/accept/{id}")
+    public String accept(@PathVariable Long id, RedirectAttributes ra) {
+
+        try {
+            requestService.acceptRequest(id);
+            ra.addFlashAttribute("success", "Request accepted");
+
+        } catch (Exception e) {
+
+            ra.addFlashAttribute("error", e.getMessage());
+        }
+
+        return "redirect:/requests";
+    }
+
+    // Rejects a request and updates its status
+    @PostMapping("/requests/reject/{id}")
+    public String reject(@PathVariable Long id, RedirectAttributes ra) {
+
+        try {
+            requestService.rejectRequest(id);
+            ra.addFlashAttribute("success", "Request rejected");
+
+        } catch (Exception e) {
+
+            ra.addFlashAttribute("error", e.getMessage());
+        }
+
+        return "redirect:/requests";
+    }
 }
